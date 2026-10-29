@@ -1,7 +1,7 @@
 """PEEK · Terminal Web Navigator CLI.
 
 Modern terminal interface for autonomous web browsing with live step indicators,
-interactive shell mode, and clean Unicode result cards.
+interactive shell mode with browser session reuse, and clean Unicode result cards.
 """
 
 from __future__ import annotations
@@ -12,18 +12,17 @@ import os
 import sys
 import textwrap
 import time
+import urllib.parse
 import warnings
 from typing import Any, Dict, Optional
 
+# Force UTF-8 stream reconfiguration on Windows consoles to prevent symbol mojibake
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+
 # Suppress async pipe warnings from Playwright on Windows
 warnings.filterwarnings("ignore", category=ResourceWarning)
-
-# Ensure proper Unicode encoding in standard Windows terminals
-if sys.platform == "win32":
-    if hasattr(sys.stdout, "reconfigure"):
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    if hasattr(sys.stderr, "reconfigure"):
-        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -133,9 +132,99 @@ async def execute_task(
     start_url: str,
     headless: bool,
     max_steps: int,
+    driver: Optional[BrowserController] = None,
+    llm_client: Optional[GroqClient] = None,
 ) -> None:
-    """Execute a single agent browsing session."""
-    # Ensure loguru console output remains disabled
+    """Execute a single agent browsing session with optional browser reuse."""
+    logger.remove()
+
+    settings = Settings.load()
+    settings.browser.headless = headless
+    settings.loop.max_steps = max_steps
+
+    if not settings.llm.api_key:
+        print("\n[Error] GROQ_API_KEY not configured. Please set GROQ_API_KEY in your .env file.\n")
+        return
+
+    # Search fast-path shortcut: bypass blank search homepages directly to results
+    if start_url and start_url.rstrip("/") in (
+        "https://www.google.com",
+        "http://www.google.com",
+        "https://google.com",
+        "http://google.com",
+    ) and goal:
+        start_url = f"https://www.google.com/search?q={urllib.parse.quote_plus(goal.strip())}"
+
+    own_driver = False
+    own_llm = False
+
+    if driver is None:
+        driver = BrowserController(
+            headless=settings.browser.headless,
+            slow_mo=300 if not settings.browser.headless else 0,
+            viewport_width=settings.browser.viewport_width,
+            viewport_height=settings.browser.viewport_height,
+            load_timeout=settings.browser.load_timeout,
+        )
+        own_driver = True
+
+    if llm_client is None:
+        llm_client = GroqClient(
+            api_key=settings.llm.api_key,
+            model=settings.llm.model,
+            timeout=settings.llm.timeout,
+            max_retries=settings.llm.max_retries,
+            temperature=settings.llm.temperature,
+        )
+        own_llm = True
+
+    reporter = MinimalStepReporter(max_steps=max_steps, start_url=start_url)
+    agent = AgentLoop(
+        driver=driver,
+        llm_client=llm_client,
+        settings=settings,
+        ui_callback=reporter,
+        max_steps=max_steps,
+    )
+
+    start_time = time.perf_counter()
+    outcome = ""
+    is_success = False
+    steps_taken = 0
+
+    try:
+        if own_driver:
+            await driver.start()
+        outcome = await agent.run(goal=goal, start_url=start_url)
+        is_success = agent.state.status == LoopStatus.COMPLETED
+        steps_taken = agent.state.current_step
+    except asyncio.CancelledError:
+        outcome = "Execution cancelled."
+        is_success = False
+    except Exception as e:
+        outcome = f"Agent error: {e}"
+        is_success = False
+    finally:
+        if own_driver:
+            await driver.close()
+        if own_llm:
+            await llm_client.close()
+
+    duration = time.perf_counter() - start_time
+    print_result_card(
+        answer=outcome,
+        duration=duration,
+        steps=steps_taken,
+        success=is_success,
+    )
+
+
+async def run_interactive_shell(
+    start_url: str,
+    headless: bool,
+    max_steps: int,
+) -> None:
+    """Interactive query loop reusing a single browser session across consecutive queries."""
     logger.remove()
 
     settings = Settings.load()
@@ -162,75 +251,39 @@ async def execute_task(
         temperature=settings.llm.temperature,
     )
 
-    reporter = MinimalStepReporter(max_steps=max_steps, start_url=start_url)
-    agent = AgentLoop(
-        driver=driver,
-        llm_client=llm_client,
-        settings=settings,
-        ui_callback=reporter,
-        max_steps=max_steps,
-    )
-
-    start_time = time.perf_counter()
-    outcome = ""
-    is_success = False
-    steps_taken = 0
+    # Launch browser once at shell startup
+    await driver.start()
+    print("Type your query or 'exit' / 'quit' to terminate.\n")
 
     try:
-        await driver.start()
-        outcome = await agent.run(goal=goal, start_url=start_url)
-        is_success = agent.state.status == LoopStatus.COMPLETED
-        steps_taken = agent.state.current_step
-    except asyncio.CancelledError:
-        outcome = "Execution cancelled."
-        is_success = False
-    except Exception as e:
-        outcome = f"Agent error: {e}"
-        is_success = False
-    finally:
-        await driver.close()
-        await llm_client.close()
+        while True:
+            try:
+                query = await asyncio.to_thread(input, "peek > ")
+                query = query.strip()
+            except (KeyboardInterrupt, EOFError):
+                print("\n\nExiting PEEK. Goodbye!\n")
+                break
 
-    duration = time.perf_counter() - start_time
-    print_result_card(
-        answer=outcome,
-        duration=duration,
-        steps=steps_taken,
-        success=is_success,
-    )
+            if not query:
+                continue
+            if query.lower() in ("exit", "quit", "q"):
+                print("\nExiting PEEK. Goodbye!\n")
+                break
 
-
-def run_interactive_shell(
-    start_url: str,
-    headless: bool,
-    max_steps: int,
-) -> None:
-    """Interactive query loop allowing consecutive searches until exit/quit."""
-    print("Type your query or 'exit' / 'quit' to terminate.\n")
-    while True:
-        try:
-            query = input("peek > ").strip()
-        except (KeyboardInterrupt, EOFError):
-            print("\n\nExiting PEEK. Goodbye!\n")
-            break
-
-        if not query:
-            continue
-        if query.lower() in ("exit", "quit", "q"):
-            print("\nExiting PEEK. Goodbye!\n")
-            break
-
-        try:
-            asyncio.run(
-                execute_task(
+            try:
+                await execute_task(
                     goal=query,
                     start_url=start_url,
                     headless=headless,
                     max_steps=max_steps,
+                    driver=driver,
+                    llm_client=llm_client,
                 )
-            )
-        except KeyboardInterrupt:
-            print("\n[Interrupted] Current search aborted.\n")
+            except KeyboardInterrupt:
+                print("\n[Interrupted] Current search aborted.\n")
+    finally:
+        await driver.close()
+        await llm_client.close()
 
 
 def main() -> None:
@@ -251,11 +304,13 @@ def main() -> None:
                 )
             )
         else:
-            # Interactive shell mode
-            run_interactive_shell(
-                start_url=args.start_url,
-                headless=headless,
-                max_steps=args.max_steps,
+            # Interactive shell mode with browser session reuse
+            asyncio.run(
+                run_interactive_shell(
+                    start_url=args.start_url,
+                    headless=headless,
+                    max_steps=args.max_steps,
+                )
             )
     except KeyboardInterrupt:
         print("\n\nExiting PEEK. Goodbye!\n")

@@ -32,6 +32,12 @@ class BrowserDriver:
                 "height": 800
             })
 
+            # Block heavy, non-essential network assets irrelevant to DOM parsing & LLM reasoning
+            await self.page.route(
+                "**/*.{png,jpg,jpeg,gif,webp,svg,ico,woff,woff2,ttf,otf,eot,mp4,webm,mp3}",
+                lambda route: route.abort()
+            )
+
             return "Browser started successfully"
         except Exception as e:
             return f"Error starting browser: {str(e)}"

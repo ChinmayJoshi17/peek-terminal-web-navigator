@@ -8,6 +8,7 @@ Data schemas: Uses core.types (Action, Observation, LoopState, StepResult)
 from __future__ import annotations
 
 import time
+import urllib.parse
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
@@ -467,6 +468,15 @@ What is your next action? Output STRICT JSON only.
         Returns:
             The final answer or error message
         """
+        # Search fast-path shortcut: bypass blank search homepages directly to results
+        if start_url and start_url.rstrip("/") in (
+            "https://www.google.com",
+            "http://www.google.com",
+            "https://google.com",
+            "http://google.com",
+        ) and goal:
+            start_url = f"https://www.google.com/search?q={urllib.parse.quote_plus(goal.strip())}"
+
         run_start_time = time.perf_counter()
         self.state = LoopState(
             goal=goal,

@@ -83,6 +83,11 @@ class BrowserController:
                 "width": self.viewport_width,
                 "height": self.viewport_height,
             })
+            # Block heavy, non-essential network assets irrelevant to DOM parsing & LLM reasoning
+            await self._page.route(
+                "**/*.{png,jpg,jpeg,gif,webp,svg,ico,woff,woff2,ttf,otf,eot,mp4,webm,mp3}",
+                lambda route: route.abort(),
+            )
             return "Browser started successfully"
         except Exception as e:
             await self._cleanup_on_error()
