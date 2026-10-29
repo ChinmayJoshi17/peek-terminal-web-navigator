@@ -1,0 +1,111 @@
+================================================================================
+                    PEEK · TERMINAL WEB NAVIGATOR
+                    Quick Reference & Commands Guide
+================================================================================
+
+1. ENVIRONMENT SETUP
+--------------------------------------------------------------------------------
+Open a terminal in the project directory (PowerShell or Command Prompt):
+
+# Create a virtual environment (recommended)
+python -m venv .venv
+
+# Activate the virtual environment:
+# - On PowerShell:
+.\.venv\Scripts\Activate.ps1
+# - On Windows CMD:
+.\.venv\Scripts\activate.bat
+# - On Linux / macOS:
+source .venv/bin/activate
+
+# Install required Python dependencies
+pip install -r requirements.txt
+
+# Install Playwright browser binaries
+playwright install chromium
+
+
+2. API CONFIGURATION
+--------------------------------------------------------------------------------
+PEEK requires an inference API key (Groq Cloud).
+
+1. Copy .env.example to .env:
+   copy .env.example .env
+
+2. Open .env in any text editor and paste your Groq API key:
+   GROQ_API_KEY=gsk_your_groq_api_key_here
+
+Get your free API key at: https://console.groq.com/keys
+
+
+3. EXECUTION COMMANDS
+--------------------------------------------------------------------------------
+
+A. Windows One-Click Menu Launcher:
+   .\run.bat
+
+B. Interactive Terminal Shell:
+   python cli.py
+
+   Launches the interactive "peek > " prompt for multi-turn browsing sessions.
+   Type 'exit' or 'quit' when finished.
+
+C. Direct One-Liner Search Queries:
+   # Headless execution (default, fast):
+   python cli.py --goal "Who founded Wikipedia and when?" -u https://en.wikipedia.org
+
+   # Headed execution (watch browser interact in real-time):
+   python cli.py --goal "Search for Alan Turing" -u https://en.wikipedia.org --headed
+
+D. Web Cockpit (Streamlit Dashboard):
+   python -m streamlit run ui/dashboard.py
+   (Opens http://localhost:8501 automatically in your browser)
+
+E. Evaluation Benchmark Suite:
+   python eval/runner.py --headless
+   (Runs full 6-task WebArena mini-benchmark suite with structured metrics)
+
+
+4. 10+ READY-TO-TEST EXAMPLE SEARCH QUERIES
+--------------------------------------------------------------------------------
+
+[Wikipedia & Factual Knowledge]
+1. python cli.py -g "Who created the Python programming language and when was it first released?" -u https://en.wikipedia.org/wiki/Python_(programming_language)
+2. python cli.py -g "What field is Alan Turing considered the father of?" -u https://en.wikipedia.org/wiki/Main_Page
+3. python cli.py -g "Who was Savitribai Phule and what was her spouse's name?" -u https://en.wikipedia.org/wiki/Main_Page
+4. python cli.py -g "Report the featured article title and summary from today's Wikipedia homepage." -u https://en.wikipedia.org/wiki/Main_Page
+
+[E-Commerce & Data Extraction (Books to Scrape)]
+5. python cli.py -g "How many book categories are listed in the sidebar?" -u http://books.toscrape.com/
+6. python cli.py -g "Click on the Travel category in the sidebar and tell me the price of the first book." -u http://books.toscrape.com/
+7. python cli.py -g "Find the title of the first book shown under the Mystery category." -u http://books.toscrape.com/
+8. python cli.py -g "What is the book title and rating on the first item of the home page?" -u http://books.toscrape.com/
+
+[Technical Lookups & Project Overviews]
+9. python cli.py -g "What is the primary purpose of example.com according to the page content?" -u https://example.com/
+10. python cli.py -g "Search for playwright-python on GitHub and report the main repository description." -u https://github.com/search?q=playwright-python
+11. python cli.py -g "Navigate to python.org and tell me the latest stable release version number." -u https://www.python.org/
+
+
+5. COMMON TROUBLESHOOTING TIPS
+--------------------------------------------------------------------------------
+
+• PowerShell Execution Policy Error:
+  If running 'Activate.ps1' produces: "cannot be loaded because running scripts is disabled..."
+  Solution: Run in PowerShell:
+  Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+• Playwright Executable Missing:
+  If Chromium fails to launch: "Executable doesn't exist..."
+  Solution:
+  playwright install chromium
+
+• LLM Rate Limits (HTTP 429):
+  Groq free tier has an 8,000 Tokens-Per-Minute (TPM) limit. PEEK includes DOM token
+  pruning and exponential backoff to handle rate limits automatically. If you run
+  several heavy queries back-to-back, pause 10-15 seconds before the next query.
+
+• Logs & Telemetry Audit:
+  Full telemetry traces are saved silently to:
+  logs/agent_run_<timestamp>.jsonl
+================================================================================

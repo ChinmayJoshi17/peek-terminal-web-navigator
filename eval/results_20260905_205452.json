@@ -1,0 +1,82 @@
+{
+  "metadata": {
+    "run_at": "2026-09-05T20:54:52.131911",
+    "tasks_file": "C:\\Users\\chinm\\OneDrive\\Desktop\\nano-browser\\nano-browser-agent\\eval\\benchmark_tasks.json",
+    "total_tasks": 4
+  },
+  "summary": {
+    "total_tasks": 4,
+    "success_count": 0,
+    "failure_count": 4,
+    "success_rate_percent": 0.0,
+    "mean_steps_to_success": 0.0,
+    "mean_latency_ms": 0.0,
+    "mean_duration_seconds": 0.0
+  },
+  "results": [
+    {
+      "task_id": "wikipedia_main_page",
+      "name": "Wikipedia: read main page",
+      "start_url": "https://en.wikipedia.org/wiki/Main_Page",
+      "goal": "Navigate to the Wikipedia main page and report the title of the page.",
+      "expected_pattern": "Wikipedia",
+      "max_steps": 8,
+      "success": false,
+      "final_answer": "Agent error: 'AgentLoop' object has no attribute 'MAX_ELEMENTS_TEXT_CHARS'",
+      "steps_taken": 1,
+      "duration_seconds": 5.29,
+      "avg_action_latency_ms": 0.0,
+      "total_tokens_used": 0,
+      "failure_reason": "Agent reported failure: Agent error: 'AgentLoop' object has no attribute 'MAX_ELEMENTS_TEXT_CHARS'",
+      "evaluated_at": "2026-09-05T20:54:30.789498"
+    },
+    {
+      "task_id": "wikipedia_python_lang",
+      "name": "Wikipedia: identify article subject",
+      "start_url": "https://en.wikipedia.org/wiki/Python_(programming_language)",
+      "goal": "Visit the Wikipedia page for Python (programming language) and tell me who created the Python programming language.",
+      "expected_pattern": "Guido",
+      "max_steps": 10,
+      "success": false,
+      "final_answer": "Agent error: 'AgentLoop' object has no attribute 'MAX_ELEMENTS_TEXT_CHARS'",
+      "steps_taken": 1,
+      "duration_seconds": 5.49,
+      "avg_action_latency_ms": 0.0,
+      "total_tokens_used": 0,
+      "failure_reason": "Agent reported failure: Agent error: 'AgentLoop' object has no attribute 'MAX_ELEMENTS_TEXT_CHARS'",
+      "evaluated_at": "2026-09-05T20:54:36.280216"
+    },
+    {
+      "task_id": "books_toscrape_home",
+      "name": "Books to Scrape: read home page",
+      "start_url": "http://books.toscrape.com/",
+      "goal": "Visit the Books to Scrape home page and tell me how many categories of books are available.",
+      "expected_pattern": "categor",
+      "max_steps": 10,
+      "success": false,
+      "final_answer": "Agent error: 'AgentLoop' object has no attribute 'MAX_ELEMENTS_TEXT_CHARS'",
+      "steps_taken": 1,
+      "duration_seconds": 10.82,
+      "avg_action_latency_ms": 0.0,
+      "total_tokens_used": 0,
+      "failure_reason": "Agent reported failure: Agent error: 'AgentLoop' object has no attribute 'MAX_ELEMENTS_TEXT_CHARS'",
+      "evaluated_at": "2026-09-05T20:54:47.102051"
+    },
+    {
+      "task_id": "example_domain_check",
+      "name": "Example.com: identify site purpose",
+      "start_url": "https://example.com/",
+      "goal": "Visit example.com and tell me what this domain is used for according to the page content.",
+      "expected_pattern": "illustrat|example|domain",
+      "max_steps": 8,
+      "success": false,
+      "final_answer": "Agent error: 'AgentLoop' object has no attribute 'MAX_ELEMENTS_TEXT_CHARS'",
+      "steps_taken": 1,
+      "duration_seconds": 5.03,
+      "avg_action_latency_ms": 0.0,
+      "total_tokens_used": 0,
+      "failure_reason": "Agent reported failure: Agent error: 'AgentLoop' object has no attribute 'MAX_ELEMENTS_TEXT_CHARS'",
+      "evaluated_at": "2026-09-05T20:54:52.130502"
+    }
+  ]
+}

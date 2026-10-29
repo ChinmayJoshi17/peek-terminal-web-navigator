@@ -1,0 +1,50 @@
+[
+  {
+    "task_id": "wikipedia_main_page",
+    "name": "Wikipedia: read main page",
+    "start_url": "https://en.wikipedia.org/wiki/Main_Page",
+    "goal": "Navigate to the Wikipedia main page and report the title of the page.",
+    "expected_pattern": "Wikipedia",
+    "max_steps": 8
+  },
+  {
+    "task_id": "wikipedia_python_lang",
+    "name": "Wikipedia: identify article subject",
+    "start_url": "https://en.wikipedia.org/wiki/Python_(programming_language)",
+    "goal": "Visit the Wikipedia page for Python (programming language) and tell me who created the Python programming language.",
+    "expected_pattern": "Guido",
+    "max_steps": 10
+  },
+  {
+    "task_id": "books_toscrape_home",
+    "name": "Books to Scrape: read home page",
+    "start_url": "http://books.toscrape.com/",
+    "goal": "Visit the Books to Scrape home page and tell me how many categories of books are available.",
+    "expected_pattern": "categor",
+    "max_steps": 10
+  },
+  {
+    "task_id": "example_domain_check",
+    "name": "Example.com: identify site purpose",
+    "start_url": "https://example.com/",
+    "goal": "Visit example.com and tell me what this domain is used for according to the page content.",
+    "expected_pattern": "illustrat|example|domain",
+    "max_steps": 8
+  },
+  {
+    "task_id": "books_toscrape_category_navigation",
+    "name": "Books to Scrape: Travel category navigation",
+    "start_url": "http://books.toscrape.com/",
+    "goal": "Start at the Books to Scrape home page, click on the 'Travel' category in the sidebar, and report either the total book count for the Travel category or the title of the first book shown on the category page.",
+    "expected_pattern": "Travel|book|Himalaya",
+    "max_steps": 5
+  },
+  {
+    "task_id": "wikipedia_search_multi_step",
+    "name": "Wikipedia: Alan Turing search",
+    "start_url": "https://en.wikipedia.org/wiki/Main_Page",
+    "goal": "Navigate to the Wikipedia main page, use the search box to search for 'Alan Turing', and report what field Alan Turing is considered the father of according to the page.",
+    "expected_pattern": "computer|science|intelligence",
+    "max_steps": 5
+  }
+]

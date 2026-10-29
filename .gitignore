@@ -1,0 +1,47 @@
+# Environment variables (secrets)
+.env
+.env.local
+.env.*.local
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.Python
+
+# Python bytecode & caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Streamlit configuration & cache
+.streamlit/
+
+# Telemetry logs (preserve directory structure without committing raw telemetry traces)
+logs/*.jsonl
+!logs/.gitkeep
+
+# Playwright artifacts & test results
+.playwright/
+test-results/
+playwright-report/
+blob-report/
+
+# IDE & editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini

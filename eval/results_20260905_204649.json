@@ -1,0 +1,82 @@
+{
+  "metadata": {
+    "run_at": "2026-09-05T20:46:49.904977",
+    "tasks_file": "C:\\Users\\chinm\\OneDrive\\Desktop\\nano-browser\\nano-browser-agent\\eval\\benchmark_tasks.json",
+    "total_tasks": 4
+  },
+  "summary": {
+    "total_tasks": 4,
+    "success_count": 3,
+    "failure_count": 1,
+    "success_rate_percent": 75.0,
+    "mean_steps_to_success": 1.67,
+    "mean_latency_ms": 2739.13,
+    "mean_duration_seconds": 9.83
+  },
+  "results": [
+    {
+      "task_id": "wikipedia_main_page",
+      "name": "Wikipedia: read main page",
+      "start_url": "https://en.wikipedia.org/wiki/Main_Page",
+      "goal": "Navigate to the Wikipedia main page and report the title of the page.",
+      "expected_pattern": "Wikipedia",
+      "max_steps": 8,
+      "success": true,
+      "final_answer": "Wikipedia, the free encyclopedia",
+      "steps_taken": 1,
+      "duration_seconds": 7.13,
+      "avg_action_latency_ms": 1828.24,
+      "total_tokens_used": 0,
+      "failure_reason": null,
+      "evaluated_at": "2026-09-05T20:46:10.109409"
+    },
+    {
+      "task_id": "wikipedia_python_lang",
+      "name": "Wikipedia: identify article subject",
+      "start_url": "https://en.wikipedia.org/wiki/Python_(programming_language)",
+      "goal": "Visit the Wikipedia page for Python (programming language) and tell me who created the Python programming language.",
+      "expected_pattern": "Guido",
+      "max_steps": 10,
+      "success": false,
+      "final_answer": "Agent error: [LLMError] LLM request failed: [LLMError] Groq API HTTP 413: Request too large for model `openai/gpt-oss-120b` in organization `org_01m1h9vbzte4yt87g4yjhsqm9p` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Requested 19985, please reduce your message size and try again. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing",
+      "steps_taken": 1,
+      "duration_seconds": 17.42,
+      "avg_action_latency_ms": 1828.24,
+      "total_tokens_used": 0,
+      "failure_reason": "Agent reported failure: Agent error: [LLMError] LLM request failed: [LLMError] Groq API HTTP 413: Request too large for model `openai/gpt-oss-120b` in organization `org_01m1h9vbzte4yt87g4yjhsqm9p` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Requested 19985, please reduce your message size and try again. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing",
+      "evaluated_at": "2026-09-05T20:46:27.529405"
+    },
+    {
+      "task_id": "books_toscrape_home",
+      "name": "Books to Scrape: read home page",
+      "start_url": "http://books.toscrape.com/",
+      "goal": "Visit the Books to Scrape home page and tell me how many categories of books are available.",
+      "expected_pattern": "categor",
+      "max_steps": 10,
+      "success": true,
+      "final_answer": "There are 50 categories of books available on the Books to Scrape site.",
+      "steps_taken": 1,
+      "duration_seconds": 10.79,
+      "avg_action_latency_ms": 3447.88,
+      "total_tokens_used": 0,
+      "failure_reason": null,
+      "evaluated_at": "2026-09-05T20:46:38.322427"
+    },
+    {
+      "task_id": "example_domain_check",
+      "name": "Example.com: identify site purpose",
+      "start_url": "https://example.com/",
+      "goal": "Visit example.com and tell me what this domain is used for according to the page content.",
+      "expected_pattern": "illustrat|example|domain",
+      "max_steps": 8,
+      "success": true,
+      "final_answer": "According to the page, example.com is a domain reserved for use in illustrative examples in documents and tutorials.",
+      "steps_taken": 3,
+      "duration_seconds": 11.58,
+      "avg_action_latency_ms": 2941.27,
+      "total_tokens_used": 0,
+      "failure_reason": null,
+      "evaluated_at": "2026-09-05T20:46:49.903517"
+    }
+  ]
+}
